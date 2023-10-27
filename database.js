@@ -1,60 +1,31 @@
-var sqlite3 = require('sqlite3').verbose()
-var md5 = require('md5')
+// Import your database connection library, e.g., 'pg-promise' or 'sqlite3'.
+const db = require('your-database-library');
 
-const DBSOURCE = "db.sqlite"
+// Define the CREATE TABLE statement for the customer table.
+const createCustomerTable = `
+  CREATE TABLE IF NOT EXISTS customer (
+    customer_id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    address TEXT NOT NULL,
+    email TEXT NOT NULL,
+    date_of_birth DATE NOT NULL,
+    gender TEXT NOT NULL,
+    age INT NOT NULL,
+    card_holder_name TEXT NOT NULL,
+    card_number CHAR(12) NOT NULL,
+    expiry_date DATE NOT NULL,
+    cvv CHAR(3) NOT NULL,
+    timestamp TIMESTAMP NOT NULL
+  );
+`;
 
+// Execute the CREATE TABLE statement.
+db.none(createCustomerTable)
+  .then(() => {
+    console.log('customer table created successfully');
+  })
+  .catch((error) => {
+    console.error('Error creating customer table:', error);
+  });
 
-let db = new sqlite3.Database(DBSOURCE, (err) => {
-    if (err) {
-        // Cannot open database
-        console.error(err.message)
-        throw err
-    } else {
-        console.log('Connected to the SQlite database.')
-        db.run(`CREATE TABLE products (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            productName text, 
-            description text,
-            category text,
-            brand text,
-            expiredDate text,
-            manufacturedDate text,
-            batchNumber INTEGER,
-            unitPrice INTEGER,
-            quantity INTEGER,
-            createdDate text
-            )`, (err) => {
-            if (err) {
-                // Table already created
-            } else {
-                // Table just created, creating some rows
-                var insert = 'INSERT INTO products (productName, description, category, brand, expiredDate, manufacturedDate, batchNumber, unitPrice, quantity, createdDate) VALUES (?,?,?,?,?,?,?,?,?,?)'
-                db.run(insert, ["White Basmathi Rice", "White Basmathi Rice imported from Pakistan. High-quality rice with extra fragrance. Organically grown.", "Rice", "CIC", "2023.05.04", "2022.02.20", 324567, , 1020, 200, "2022.02.24"])
-            }
-        })
-
-
-        db.run(`CREATE TABLE suppliers (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            supplierName text, 
-            address text,
-            joinedDate text,
-            mobileNo text
-            )`, (err) => {
-            if (err) {
-                // Table already created
-            } else {
-                // Table just created, creating some rows
-                var insert = 'INSERT INTO suppliers (supplierName, address, joinedDate, mobileNo) VALUES (?,?,?,?)'
-                db.run(insert, ["D.J.Ishara", "345A ,R.A De Mel Road, Colombo 3", "16/3/2022", "0776600933"])
-
-            }
-        })
-
-
-
-    }
-})
-
-module.exports = db
 
